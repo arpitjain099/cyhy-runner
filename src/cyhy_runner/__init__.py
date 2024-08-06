@@ -1,4 +1,5 @@
 """The Cyber Hygiene job runner."""
+
 # Standard Python Libraries
 from typing import List
 
