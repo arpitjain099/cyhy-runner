@@ -105,6 +105,7 @@ setup(
         # checking between environments.
         "dev": [
             "types-docopt",
+            "types-requests",
             "types-setuptools",
         ],
         "test": [
