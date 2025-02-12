@@ -1,4 +1,3 @@
-#!/usr/bin/env pytest -vs
 """Tests for Cyber Hygiene job runner."""
 
 # Standard Python Libraries
