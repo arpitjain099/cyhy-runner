@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/cisagov/cyhy-runner/badge.svg?branch=develop)](https://coveralls.io/github/cisagov/cyhy-runner?branch=develop)
 
 This project provides functionality to process jobs pushed by
-[jsf9k/cyhy-commander](https://github.com/jsf9k/cyhy-commander) to a
+[cisagov/cyhy-commander](https://github.com/cisagov/cyhy-commander) to a
 scanner instance. This includes starting and monitoring processes, as well as
 bundling the results for pickup.
 
