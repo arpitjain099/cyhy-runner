@@ -25,7 +25,6 @@ import signal
 import subprocess  # nosec
 import sys
 import time
-from typing import Set
 
 # Third-Party Libraries
 import daemon
@@ -51,7 +50,7 @@ LOCK_FILENAME = "cyhy-runner"
 
 logger = logging.getLogger(__name__)
 
-running_dirs: Set[str] = set()
+running_dirs: set[str] = set()
 processes = []
 IS_RUNNING = True
 
