@@ -25,7 +25,6 @@ import signal
 import subprocess  # nosec
 import sys
 import time
-from typing import Set
 
 # Third-Party Libraries
 import daemon
@@ -51,7 +50,7 @@ LOCK_FILENAME = "cyhy-runner"
 
 logger = logging.getLogger(__name__)
 
-running_dirs: Set[str] = set()
+running_dirs: set[str] = set()
 processes = []
 IS_RUNNING = True
 
@@ -187,7 +186,7 @@ def main():
 
     group = args["--group"]
     if group:
-        print('Setting effective group to "{}".'.format(group), file=sys.stderr)
+        print(f'Setting effective group to "{group}".', file=sys.stderr)
 
         new_gid = grp.getgrnam(group).gr_gid
         os.setegid(new_gid)
@@ -197,7 +196,7 @@ def main():
     working_dir = os.path.join(os.getcwd(), args["<working-dir>"])
     if not os.path.exists(working_dir):
         print(
-            'Working directory "{}" does not exist.'.format(working_dir),
+            f'Working directory "{working_dir}" does not exist.',
             end="",
             file=sys.stderr,
         )
