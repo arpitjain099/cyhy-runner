@@ -116,7 +116,11 @@ def do_work(job_dir):
 
     logger.info('Starting work in "%s".', job_dir)
     os.chmod(job_file, 0o755)  # nosec
-    process = subprocess.Popen(  # nosec
+    # TODO: flake8 complains that the use of shell=True is insecure
+    # here, giving a DUO116 error.  This is the reason for the noqa
+    # comment below.  We should determine whether or not we can remove
+    # shell=True.  See #47.
+    process = subprocess.Popen(  # noqa: DUO116 # nosec
         JOB_FILE, cwd=job_dir, shell=True, stdout=out_file, stderr=err_file
     )
     process.job_dir = job_dir
