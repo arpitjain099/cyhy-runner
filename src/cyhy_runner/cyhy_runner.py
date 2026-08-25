@@ -16,6 +16,7 @@ Options:
 """
 
 # Standard Python Libraries
+import errno
 import grp
 import logging
 from logging.handlers import RotatingFileHandler
@@ -38,6 +39,7 @@ DONE_DIR = "done"
 READY_FILE = ".ready"
 DONE_FILE = ".done"
 JOB_FILE = "./job"
+SHELL = "/bin/sh"
 STDOUT_FILE = "job.out"
 STDERR_FILE = "job.err"
 POLL_INTERVAL = 15
@@ -116,13 +118,20 @@ def do_work(job_dir):
 
     logger.info('Starting work in "%s".', job_dir)
     os.chmod(job_file, 0o755)  # nosec
-    # TODO: flake8 complains that the use of shell=True is insecure
-    # here, giving a DUO116 error.  This is the reason for the noqa
-    # comment below.  We should determine whether or not we can remove
-    # shell=True.  See #47.
-    process = subprocess.Popen(  # noqa: DUO116 # nosec
-        JOB_FILE, cwd=job_dir, shell=True, stdout=out_file, stderr=err_file
-    )
+    try:
+        process = subprocess.Popen(  # nosec
+            [JOB_FILE], cwd=job_dir, stdout=out_file, stderr=err_file
+        )
+    except OSError as err:
+        if err.errno != errno.ENOEXEC:
+            raise
+        # The job file has no shebang, so the kernel will not execute it
+        # directly.  A shell falls back to reading it as a shell script in
+        # that case, which is what running it through one used to do, so
+        # do the same rather than failing a job that used to run.
+        process = subprocess.Popen(  # nosec
+            [SHELL, JOB_FILE], cwd=job_dir, stdout=out_file, stderr=err_file
+        )
     process.job_dir = job_dir
     processes.append(process)
 

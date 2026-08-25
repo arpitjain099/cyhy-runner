@@ -52,3 +52,43 @@ def test_release_version():
     assert (
         RELEASE_TAG == f"v{PROJECT_VERSION}"
     ), "RELEASE_TAG does not match the project version"
+
+
+def _write_job(job_dir, contents):
+    """Create an executable job file with the given contents."""
+    os.makedirs(job_dir)
+    job_file = os.path.join(job_dir, "job")
+    with open(job_file, "w") as f:
+        f.write(contents)
+    os.chmod(job_file, 0o755)
+
+
+def _run_job(tmp_path, contents):
+    """Run a job file through do_work and return its captured stdout."""
+    runner = cyhy_runner.cyhy_runner
+    job_name = "a_job"
+    with patch.object(runner, "RUNNING_DIR", str(tmp_path)):
+        _write_job(os.path.join(str(tmp_path), job_name), contents)
+        runner.do_work(job_name)
+        assert len(runner.processes) == 1
+        process = runner.processes.pop()
+        assert process.wait() == 0
+    with open(os.path.join(str(tmp_path), job_name, runner.STDOUT_FILE)) as f:
+        return f.read()
+
+
+def test_do_work_runs_a_job_with_a_shebang(tmp_path):
+    """Verify that a job file with a shebang is run."""
+    assert _run_job(tmp_path, "#!/bin/sh\necho with-shebang\n") == "with-shebang\n"
+
+
+def test_do_work_runs_a_job_without_a_shebang(tmp_path):
+    """Verify that a job file the kernel cannot execute is still run by a shell.
+
+    A job file with no shebang is not directly executable, so running it
+    raises OSError with ENOEXEC. do_work is called from check_for_new_work
+    after the job has been added to running_dirs, so letting that escape
+    leaves the job in running_dirs with nothing tracking it, and it is never
+    moved to the done directory.
+    """
+    assert _run_job(tmp_path, "echo no-shebang\n") == "no-shebang\n"
