@@ -61,7 +61,7 @@ def _write_job(job_dir, contents):
     with open(job_file, "w") as f:
         f.write(contents)
     # The runner chmods the job file the same way before executing it.
-    os.chmod(job_file, 0o755)  # nosec
+    os.chmod(job_file, 0o755)  # nosec B103
 
 
 def _run_job(tmp_path, contents):
